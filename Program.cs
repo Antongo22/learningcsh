@@ -7,60 +7,91 @@ using System.Threading.Tasks;
 
 namespace learningcsh
 {
-    internal class Program
+    public class MyClass
     {
-        class MyArray
+        public int Value { get; set; }
+
+        public MyClass(int value)
         {
-            List<int> arr;
-            public int Length;
-
-            public MyArray(int size)
-            {
-                arr = new List<int>(size);
-                Length = size;
-            }
-
-            public MyArray()
-            {
-                arr = new List<int>();
-                Length = 0;
-            }
-
-            public int this[string index]
-            {
-                get
-                {
-                    return arr[(int)Math.Round(double.Parse(index, CultureInfo.InvariantCulture))];
-                }
-                set
-                {
-                    if ((int)Math.Round(double.Parse(index, CultureInfo.InvariantCulture)) >= arr.Count)
-                    {
-                        arr.Add(value);
-                        Length ++;
-                    }
-                    arr[(int)Math.Round(double.Parse(index, CultureInfo.InvariantCulture))] = value;
-                }
-            }
+            Value = value;
         }
 
+        public static bool operator ==(MyClass a, MyClass b)
+        {
+            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
+                return true;
+
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null))
+                return false;
+
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(MyClass a, MyClass b)
+        {
+            return !(a == b);
+        }
+
+        public static bool operator true(MyClass obj)
+        {
+            return obj.Value > 0;
+        }
+
+        public static bool operator false(MyClass obj)
+        {
+            return obj.Value <= 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is MyClass other)
+            {
+                return this == other;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static explicit operator int(MyClass obj)
+        {
+            return obj.Value;
+        }
+    }
+
+
+    internal class Program
+    {
 
         static void Main(string[] args)
         {
-            MyArray myArray = new MyArray();
-            for (int i = 0; i < 5; i++)
+            MyClass obj1 = new MyClass(10);
+            MyClass obj2 = new MyClass(10);
+            MyClass obj3 = new MyClass(-5);
+
+            Console.WriteLine(obj1 == obj2);  
+            Console.WriteLine(obj1 != obj3);  
+
+            if (obj1)
             {
-                myArray[i.ToString() + ".4"] = i;
+                Console.WriteLine("obj1 is true");
+            }
+            else
+            {
+                Console.WriteLine("obj1 is false");
             }
 
-            for (int i = 0; i < 5; i++)
+            if (obj3)
             {
-                Console.WriteLine(myArray[i.ToString()]);
+                Console.WriteLine("obj3 is true");
             }
-
-            Console.WriteLine("Длина - " + myArray.Length);
-
-            Console.ReadLine();
+            else
+            {
+                Console.WriteLine("obj3 is false");
+            }
         }
     }
 }
