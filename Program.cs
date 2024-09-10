@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,16 +30,16 @@ namespace learningcsh
             {
                 get
                 {
-                    return arr[(int)Math.Round(double.Parse(index))];
+                    return arr[(int)Math.Round(double.Parse(index, CultureInfo.InvariantCulture))];
                 }
                 set
                 {
-                    if ((int)Math.Round(double.Parse(index)) >= arr.Count)
+                    if ((int)Math.Round(double.Parse(index, CultureInfo.InvariantCulture)) >= arr.Count)
                     {
                         arr.Add(value);
                         Length ++;
                     }
-                    arr[(int)Math.Round(double.Parse(index))] = value;
+                    arr[(int)Math.Round(double.Parse(index, CultureInfo.InvariantCulture))] = value;
                 }
             }
         }
@@ -49,7 +50,7 @@ namespace learningcsh
             MyArray myArray = new MyArray();
             for (int i = 0; i < 5; i++)
             {
-                myArray[i.ToString()] = i;
+                myArray[i.ToString() + ".4"] = i;
             }
 
             for (int i = 0; i < 5; i++)
