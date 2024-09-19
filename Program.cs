@@ -8,277 +8,152 @@ using System.Threading.Tasks;
 using Faker.Resources;
 using Faker.Extensions;
 using System.Data.Entity.Infrastructure;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace learningcsh
 {
-
     #region 1
-    interface IAnimal
+    [AttributeUsage(AttributeTargets.Field)]
+    public class DisplayNameAttribute : Attribute
     {
-        string Name { get; }
+        public string Name { get; }
 
-        void MakeSound();
-    }
-
-    public class Dog : IAnimal
-    {
-        public string Name { get; set; }
-
-        public Dog(string name)
+        public DisplayNameAttribute(string name)
         {
             Name = name;
         }
-
-        public void MakeSound()
-        {
-            Console.WriteLine("Гав-гав!");
-        }
     }
-    public class Cat : IAnimal
+
+    public enum DayOfWeek
     {
-        public string Name { get; set; }
-
-        public Cat(string name)
-        {
-            Name = name;
-        }
-
-        public void MakeSound()
-        {
-            Console.WriteLine("Мяу!");
-        }
+        [DisplayName("Понедельник")]
+        Monday,
+        [DisplayName("Вторник")]
+        Tuesday,
+        [DisplayName("Среда")]
+        Wednesday,
+        [DisplayName("Четверг")]
+        Thursday,
+        [DisplayName("Пятница")]
+        Friday,
+        [DisplayName("Суббота")]
+        Saturday,
+        [DisplayName("Воскресенье")]
+        Sunday
     }
+
 
     #endregion
 
     #region 2
-    public interface IShape
+    [AttributeUsage(AttributeTargets.Field)]
+    public class HexCodeAttribute : Attribute
     {
-        double Area { get; }
-        double Perimeter { get; }
+        public string HexCode { get; }
+        public string Name { get; }
+
+        public HexCodeAttribute(string hexCode, string name)
+        {
+            HexCode = hexCode;
+            Name = name;
+        }
     }
 
-    public class Circle : IShape
+    public enum Color
     {
-        public double Radius { get; set; }
-
-        public Circle(double radius)
-        {
-            Radius = radius;
-        }
-
-        public double Area => Math.PI * Radius * Radius;
-
-        public double Perimeter => 2 * Math.PI * Radius;
-    }
-
-    public class Rectangle : IShape
-    {
-        public double Width { get; set; }
-        public double Height { get; set; }
-
-        public Rectangle(double width, double height)
-        {
-            Width = width;
-            Height = height;
-        }
-
-        public double Area => Width * Height;
-
-        public double Perimeter => 2 * (Width + Height);
-    }
-
-    public class Triangle : IShape
-    {
-        public double A { get; set; }
-        public double B { get; set; }
-        public double C { get; set; }
-
-        public Triangle(double a, double b, double c)
-        {
-            A = a;
-            B = b;
-            C = c;
-        }
-
-        public double Area
-        {
-            get
-            {
-                double s = (A + B + C) / 2;
-                return Math.Sqrt(s * (s - A) * (s - B) * (s - C));
-            }
-        }
-
-        public double Perimeter => A + B + C;
+        [HexCode("#FF0000", "Красный")]
+        Red,
+        [HexCode("#00FF00", "Зелёный")]
+        Green,
+        [HexCode("#0000FF", "Синий")]
+        Blue,
+        [HexCode("#FFFF00", "Жёлтый")]
+        Yellow,
+        [HexCode("#00FFFF", "Бирюзовый")]
+        Cyan,
+        [HexCode("#FF00FF", "Маджента")]
+        Magenta
     }
     #endregion
 
     #region 3
-    public interface IComparable<T>
+    [AttributeUsage(AttributeTargets.Field)]
+    public class OperationAttribute : Attribute
     {
-        int CompareTo(T other);
-    }
+        public Func<double, double, double> OperationFunc { get; }
 
-
-    public enum StudentComparisonField 
-    {
-        Name,
-        Age,
-        Grade
-    }
-
-    public enum BookComparisonField
-    {
-        Title,
-        Author,
-        Price
-    }
-
-    public class Student : IComparable<Student>
-    {
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public double Grade { get; set; }
-
-        public Student(string name, int age, double grade)
+        public OperationAttribute(Type delegateType, string methodName)
         {
-            Name = name;
-            Age = age;
-            Grade = grade;
-        }
-
-        public int CompareTo(Student other)
-        {
-            return CompareTo(other, StudentComparisonField.Age); 
-        }
-
-        public int CompareTo(Student other, StudentComparisonField field)
-        {
-            switch (field)
-            {
-                case StudentComparisonField.Name:
-                    return string.Compare(Name, other.Name, StringComparison.OrdinalIgnoreCase);
-                case StudentComparisonField.Age:
-                    return Age.CompareTo(other.Age);
-                case StudentComparisonField.Grade:
-                    return Grade.CompareTo(other.Grade);
-                default:
-                    throw new ArgumentException("Неправильное поле сравнения");
-            }
-        }
-
-        public override string ToString()
-        {
-            return $"{Name}, {Age} лет, оценка: {Grade}";
+            MethodInfo methodInfo = delegateType.GetMethod(methodName);
+            OperationFunc = (Func<double, double, double>)Delegate.CreateDelegate(typeof(Func<double, double, double>), methodInfo);
         }
     }
 
-    public class Book : IComparable<Book>
+    public static class Operations
     {
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public double Price { get; set; }
-
-        public Book(string title, string author, double price)
+        public static double Add(double a, double b) => a + b;
+        public static double Subtract(double a, double b) => a - b;
+        public static double Multiply(double a, double b) => a * b;
+        public static double Divide(double a, double b)
         {
-            Title = title;
-            Author = author;
-            Price = price;
-        }
-
-        public int CompareTo(Book other)
-        {
-            return CompareTo(other, BookComparisonField.Price); 
-        }
-
-        public int CompareTo(Book other, BookComparisonField field)
-        {
-            switch (field)
-            {
-                case BookComparisonField.Title:
-                    return string.Compare(Title, other.Title, StringComparison.OrdinalIgnoreCase);
-                case BookComparisonField.Author:
-                    return string.Compare(Author, other.Author, StringComparison.OrdinalIgnoreCase);
-                case BookComparisonField.Price:
-                    return Price.CompareTo(other.Price);
-                default:
-                    throw new ArgumentException("Неправильное поле сравнения");
-            }
-        }
-
-        public override string ToString()
-        {
-            return $"{Title} от {Author}, цена: {Price}";
+            if (b == 0) throw new DivideByZeroException("Cannot divide by zero.");
+            return a / b;
         }
     }
 
+    public enum Operation
+    {
+        [OperationAttribute(typeof(Operations), nameof(Operations.Add))]
+        Add,
+
+        [OperationAttribute(typeof(Operations), nameof(Operations.Subtract))]
+        Subtract,
+
+        [OperationAttribute(typeof(Operations), nameof(Operations.Multiply))]
+        Multiply,
+
+        [OperationAttribute(typeof(Operations), nameof(Operations.Divide))]
+        Divide
+    }
     #endregion
+
 
     internal class Program
     {
-        static void Test1()
+        public static string GetDisplayName(DayOfWeek enumValue)
         {
-            IAnimal dog = new Dog("Шарик");
-            IAnimal cat = new Cat("Мурка");
+            FieldInfo fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
+            DisplayNameAttribute attribute = fieldInfo.GetCustomAttribute<DisplayNameAttribute>();
 
-            Console.WriteLine($"{dog.Name} говорит: ");
-            dog.MakeSound();
-
-            Console.WriteLine($"{cat.Name} говорит: ");
-            cat.MakeSound();
+            return attribute?.Name ?? enumValue.ToString();
         }
 
-        static void Test2()
+        public static string GetHexCode(Color enumValue)
         {
-            IShape circle = new Circle(5);
-            IShape rectangle = new Rectangle(4, 7);
-            IShape triangle = new Triangle(3, 4, 5);
+            FieldInfo fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
+            HexCodeAttribute attribute = fieldInfo.GetCustomAttribute<HexCodeAttribute>();
 
-            Console.WriteLine($"Круг - Площадь: {circle.Area}, Периметр: {circle.Perimeter}");
-            Console.WriteLine($"Прямоугольник - Площадь: {rectangle.Area}, Периметр: {rectangle.Perimeter}");
-            Console.WriteLine($"Треугольник - Площадь: {triangle.Area}, Периметр: {triangle.Perimeter}");
-
+            return attribute?.HexCode + " - " + attribute?.Name ?? "#000000";
         }
 
-
-        static void Test3()
+        public static double PerformOperation(double a, double b, Operation operation)
         {
-            Student student1 = new Student("Антон", 20, 5.0);
-            Student student2 = new Student("Гоша", 22, 3.9);
+            FieldInfo fieldInfo = operation.GetType().GetField(operation.ToString());
+            OperationAttribute attribute = fieldInfo.GetCustomAttribute<OperationAttribute>();
 
-            Console.WriteLine("Сравнение студентов по имени:");
-            Console.WriteLine(student1.CompareTo(student2, StudentComparisonField.Name));
+            if (attribute == null)
+                throw new ArgumentException("Unknown operation.");
 
-            Console.WriteLine("Сравнение студентов по возрасту:");
-            Console.WriteLine(student1.CompareTo(student2, StudentComparisonField.Age));
-
-            Console.WriteLine("Сравнение студентов по оценке:");
-            Console.WriteLine(student1.CompareTo(student2, StudentComparisonField.Grade));
-
-
-            Book book1 = new Book("1984", "Джордж Оруэлл", 500);
-            Book book2 = new Book("О дивный новый мир", "Олдос Хаксли", 300);
-
-
-            Console.WriteLine("Сравнение книг по названию:");
-            Console.WriteLine(book1.CompareTo(book2, BookComparisonField.Title));
-
-            Console.WriteLine("Сравнение книг по автору:");
-            Console.WriteLine(book1.CompareTo(book2, BookComparisonField.Author));
-
-            Console.WriteLine("Сравнение книг по цене:");
-            Console.WriteLine(book1.CompareTo(book2, BookComparisonField.Price));
+            return attribute.OperationFunc(a, b);
         }
 
 
-        static void Main()
+        static void Main(string[] args)
         {
-            Test1();
-            Console.WriteLine();
-            Test2();
-            Console.WriteLine();
-            Test3();
+            Console.WriteLine(GetDisplayName(DayOfWeek.Monday));
+            Console.WriteLine(GetHexCode(Color.Red));
+            Console.WriteLine(PerformOperation(10, 5, Operation.Add));
         }
     }
 }
