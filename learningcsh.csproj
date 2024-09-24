@@ -45,6 +45,9 @@
     <Reference Include="Faker.Net.4.8, Version=2.0.163.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Faker.Net.2.0.163\lib\net48\Faker.Net.4.8.dll</HintPath>
     </Reference>
+    <Reference Include="FileLibrary">
+      <HintPath>..\FileLibrary\bin\Debug\FileLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />

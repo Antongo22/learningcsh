@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34714.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "learningcsh", "learningcsh.csproj", "{6B515F2C-08EA-4C7D-88B8-2F8350EE3B23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileLibrary", "..\FileLibrary\FileLibrary.csproj", "{19DA90FA-8D57-4674-9D74-CB5640FB0A4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6B515F2C-08EA-4C7D-88B8-2F8350EE3B23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B515F2C-08EA-4C7D-88B8-2F8350EE3B23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B515F2C-08EA-4C7D-88B8-2F8350EE3B23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19DA90FA-8D57-4674-9D74-CB5640FB0A4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19DA90FA-8D57-4674-9D74-CB5640FB0A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19DA90FA-8D57-4674-9D74-CB5640FB0A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19DA90FA-8D57-4674-9D74-CB5640FB0A4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
