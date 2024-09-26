@@ -47,7 +47,7 @@ namespace learningcsh
         {
             Console.WriteLine($"Текущее время: {DateTime.Now.ToLongTimeString()}");
         }
-    }
+    }   
 
     class Counter
     {
@@ -123,7 +123,7 @@ namespace learningcsh
     }
     #endregion
 
-    #region
+    #region 3
     class Button
     {
         private string text;
@@ -233,11 +233,11 @@ namespace learningcsh
 
         static void Main(string[] args)
         {
-            Test2();
+            _9.Test1();
             Console.WriteLine("\n\n\n");
-            Test3();
+            _9.Test2();
             Console.WriteLine("\n\n\n");
-            Test1();
+            _9.Test3();
         }
     }
 }
