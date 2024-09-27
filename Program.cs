@@ -1,243 +1,231 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Faker.Resources;
-using Faker.Extensions;
-using System.Data.Entity.Infrastructure;
-using System.Runtime.InteropServices;
-using System.Reflection;
-using System.IO;
-using FileLibrary;
-using System.Threading;
 
-namespace learningcsh
+// Интерфейс IEntity
+public interface IEntity
 {
-    #region 1
-    class Timer
+    int Id { get; set; }
+}
+
+// Обобщенный интерфейс IRepository
+public interface IRepository<T> where T : IEntity
+{
+    void Add(T item);
+    void Delete(T item);
+    T FindById(int id);
+    IEnumerable<T> GetAll();
+}
+
+// Класс Product
+public class Product : IEntity
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+// Класс Customer
+public class Customer : IEntity
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Address { get; set; }
+}
+
+// Реализация ProductRepository
+public class ProductRepository : IRepository<Product>
+{
+    private List<Product> _products = new List<Product>();
+
+    public void Add(Product item)
     {
-        public event EventHandler Tick;
-
-        public void Start()
-        {
-            while (true)
-            {
-                Thread.Sleep(1000);
-                OnTick();
-            }
-        }
-
-        protected virtual void OnTick()
-        {
-            Tick?.Invoke(this, EventArgs.Empty);
-        }
+        _products.Add(item);
     }
 
-    class Clock
+    public void Delete(Product item)
     {
-        public void Subscribe(Timer timer)
-        {
-            timer.Tick += ShowTime;
-        }
-
-        private void ShowTime(object sender, EventArgs e)
-        {
-            Console.WriteLine($"Текущее время: {DateTime.Now.ToLongTimeString()}");
-        }
-    }   
-
-    class Counter
-    {
-        private int count = 0;
-
-        public void Subscribe(Timer timer)
-        {
-            timer.Tick += IncrementCounter;
-        }
-
-        private void IncrementCounter(object sender, EventArgs e)
-        {
-            count++;
-            Console.WriteLine($"Счетчик: {count}");
-        }
-    }
-    #endregion
-
-    #region 2
-    class BankAccount
-    {
-        private decimal balance;
-        public decimal Balance
-        {
-            get { return balance; }
-            private set
-            {
-                balance = value;
-                OnBalanceChanged(value);
-            }
-        }
-
-        public event Action<decimal> BalanceChanged;
-
-        protected virtual void OnBalanceChanged(decimal newBalance)
-        {
-            BalanceChanged?.Invoke(newBalance);
-        }
-
-        public void Deposit(decimal amount)
-        {
-            Balance += amount;
-        }
-
-        public void Withdraw(decimal amount)
-        {
-            if (amount <= Balance)
-            {
-                Balance -= amount;
-            }
-            else
-            {
-                Console.WriteLine("Недостаточно средств.");
-            }
-        }
+        _products.Remove(item);
     }
 
-    class Logger
+    public Product FindById(int id)
     {
-        private string logFilePath = "balance_log.txt";
-
-        public Logger(BankAccount account)
-        {
-            account.BalanceChanged += LogBalanceChange;
-        }
-
-        private void LogBalanceChange(decimal newBalance)
-        {
-            string logMessage = $"Баланс изменен: {newBalance}, Время: {DateTime.Now}\n";
-            File.AppendAllText(logFilePath, logMessage);
-            Console.WriteLine("Изменение баланса записано в лог.");
-        }
+        return _products.Find(p => p.Id == id);
     }
-    #endregion
 
-    #region 3
-    class Button
+    public IEnumerable<Product> GetAll()
     {
-        private string text;
-        public string Text
-        {
-            get { return text; }
-            set
-            {
-                text = value;
-                Console.WriteLine($"Текст кнопки изменен на: {text}");
-            }
-        }
-
-        private event EventHandler click;
-        private int maxSubscribers = 3;
-        private int currentSubscribers = 0;
-
-        public event EventHandler Click
-        {
-            add
-            {
-                if (currentSubscribers >= maxSubscribers)
-                {
-                    Console.WriteLine("Достигнуто максимальное количество подписчиков.");
-                }
-                else if (click?.GetInvocationList().Contains(value) == true)
-                {
-                    Console.WriteLine("Этот подписчик уже добавлен.");
-                }
-                else
-                {
-                    click += value;
-                    currentSubscribers++;
-                }
-            }
-            remove
-            {
-                if (click != null && click.GetInvocationList().Contains(value))
-                {
-                    click -= value;
-                    currentSubscribers--;
-                }
-            }
-        }
-
-        public void Press()
-        {
-            click?.Invoke(this, EventArgs.Empty);
-        }
+        return _products;
     }
-    #endregion
+}
 
-    internal class Program
+// Реализация CustomerRepository
+public class CustomerRepository : IRepository<Customer>
+{
+    private List<Customer> _customers = new List<Customer>();
+
+    public void Add(Customer item)
     {
+        _customers.Add(item);
+    }
 
-        static void Test1() 
-        {
-            Timer timer = new Timer();
-            Clock clock = new Clock();
-            Counter counter = new Counter();
+    public void Delete(Customer item)
+    {
+        _customers.Remove(item);
+    }
 
-            clock.Subscribe(timer);
-            counter.Subscribe(timer);
+    public Customer FindById(int id)
+    {
+        return _customers.Find(c => c.Id == id);
+    }
 
-            timer.Start();
-            
-        }
+    public IEnumerable<Customer> GetAll()
+    {
+        return _customers;
+    }
+}
 
-        static void Test2()
-        {
-            BankAccount account = new BankAccount();
-            Logger logger = new Logger(account);
+// Интерфейс IClonable<T>
+public interface IClonable<T>
+{
+    T Clone();
+}
 
-            account.Deposit(500);
-            account.Withdraw(200);
-            account.Withdraw(1000);
-        }
+// Класс Point, реализующий IClonable<Point>
+public class Point : IClonable<Point>
+{
+    public int X { get; set; }
+    public int Y { get; set; }
 
+    public Point() { }
 
-        static void ShowButtonText(object sender, EventArgs e)
-        {
-            Button btn = sender as Button;
-            if (btn != null)
-            {
-                Console.WriteLine($"Кнопка нажата: {btn.Text}");
-            }
-        }
+    public Point(Point other)
+    {
+        X = other.X;
+        Y = other.Y;
+    }
 
-        static void ChangeButtonColor(object sender, EventArgs e)
-        {
-            Console.WriteLine("Цвет кнопки изменен.");
-        }
+    public Point Clone()
+    {
+        return new Point(this);
+    }
+}
 
-        static void Test3()
-        {
-            Button button = new Button { Text = "Нажми меня" };
+// Класс Rectangle, реализующий IClonable<Rectangle>
+public class Rectangle : IClonable<Rectangle>
+{
+    public int Width { get; set; }
+    public int Height { get; set; }
 
-            button.Click += ShowButtonText;
-            button.Click += ChangeButtonColor;
+    public Rectangle() { }
 
-            button.Click += (sender, e) => Console.WriteLine("Третий подписчик.");
+    public Rectangle(Rectangle other)
+    {
+        Width = other.Width;
+        Height = other.Height;
+    }
 
-            button.Click += (sender, e) => Console.WriteLine("Четвертый подписчик не будет добавлен.");
+    public Rectangle Clone()
+    {
+        return new Rectangle(this);
+    }
+}
 
-            button.Press();
-        }
+// Метод клонирования
+public static class CloningHelper
+{
+    public static T CloneObject<T>(T obj) where T : IClonable<T>
+    {
+        return obj.Clone();
+    }
+}
 
-        static void Main(string[] args)
-        {
-            _9.Test1();
-            Console.WriteLine("\n\n\n");
-            _9.Test2();
-            Console.WriteLine("\n\n\n");
-            _9.Test3();
-        }
+// Интерфейс IComparer<T> для структур
+public interface IComparer<T> where T : struct
+{
+    int Compare(T x, T y);
+}
+
+public struct ComplexNumber : IComparer<ComplexNumber>
+{
+    public double Real { get; set; }
+    public double Imaginary { get; set; }
+
+    public int Compare(ComplexNumber x, ComplexNumber y)
+    {
+        return x.Real.CompareTo(y.Real);
+    }
+}
+
+public struct RationalNumber : IComparer<RationalNumber>
+{
+    public int Numerator { get; set; }
+    public int Denominator { get; set; }
+
+    public int Compare(RationalNumber x, RationalNumber y)
+    {
+        double valueX = (double)x.Numerator / x.Denominator;
+        double valueY = (double)y.Numerator / y.Denominator;
+        return valueX.CompareTo(valueY);
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        TestRepositories();
+        TestClonable();
+        TestComparers();
+    }
+
+    public static void TestRepositories()
+    {
+        var productRepo = new ProductRepository();
+        var customerRepo = new CustomerRepository();
+
+        var product = new Product { Id = 1, Name = "Laptop", Price = 1000m };
+        var customer = new Customer { Id = 1, Name = "John Doe", Address = "123 Main St" };
+
+        productRepo.Add(product);
+        customerRepo.Add(customer);
+
+        Console.WriteLine("Added Product: " + productRepo.FindById(1).Name);
+        Console.WriteLine("Added Customer: " + customerRepo.FindById(1).Name);
+
+        productRepo.Delete(product);
+        customerRepo.Delete(customer);
+
+        Console.WriteLine("Product exists: " + (productRepo.FindById(1) != null));
+        Console.WriteLine("Customer exists: " + (customerRepo.FindById(1) != null));
+    }
+
+    public static void TestClonable()
+    {
+        var point = new Point { X = 10, Y = 20 };
+        var clonedPoint = CloningHelper.CloneObject(point);
+
+        Console.WriteLine($"Original Point: X={point.X}, Y={point.Y}");
+        Console.WriteLine($"Cloned Point: X={clonedPoint.X}, Y={clonedPoint.Y}");
+
+        var rectangle = new Rectangle { Width = 30, Height = 40 };
+        var clonedRectangle = CloningHelper.CloneObject(rectangle);
+
+        Console.WriteLine($"Original Rectangle: Width={rectangle.Width}, Height={rectangle.Height}");
+        Console.WriteLine($"Cloned Rectangle: Width={clonedRectangle.Width}, Height={clonedRectangle.Height}");
+    }
+
+    public static void TestComparers()
+    {
+        var complexComparer = new ComplexNumber();
+        var complex1 = new ComplexNumber { Real = 5, Imaginary = 2 };
+        var complex2 = new ComplexNumber { Real = 3, Imaginary = 1 };
+
+        Console.WriteLine("Complex Comparison: " + complexComparer.Compare(complex1, complex2));
+
+        var rationalComparer = new RationalNumber();
+        var rational1 = new RationalNumber { Numerator = 3, Denominator = 4 };
+        var rational2 = new RationalNumber { Numerator = 1, Denominator = 2 };
+
+        Console.WriteLine("Rational Comparison: " + rationalComparer.Compare(rational1, rational2));
     }
 }
