@@ -9,11 +9,11 @@ namespace learningcsh
     {
         public static void Main()
         {
-            _11.TestSwap();
+            _12.TestList();
             Console.WriteLine();
-            _11.TestLinkedList();
+            _12.TestSort();
             Console.WriteLine();
-            _11.TestIPrintable();
+            _12.TestFactory();
         }
      
     }
