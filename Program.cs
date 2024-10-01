@@ -9,11 +9,11 @@ namespace learningcsh
     {
         public static void Main()
         {
-            _14.TestWordFrequency();
+            _15.TestFibonacci();
             Console.WriteLine();
-            _14.TestArithmeticExpression();
+            _15.TestMatrix();
             Console.WriteLine();
-            _14.TestCountryInfo();
+            _15.TestPrimeNumbers();
         }
      
     }

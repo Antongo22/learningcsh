@@ -106,6 +106,7 @@
     <Compile Include="kt\12.cs" />
     <Compile Include="kt\13.cs" />
     <Compile Include="kt\14.cs" />
+    <Compile Include="kt\15.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
