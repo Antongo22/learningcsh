@@ -9,11 +9,12 @@ namespace learningcsh
     {
         public static void Main()
         {
-            _15.TestFibonacci();
+            _16.Test1();
             Console.WriteLine();
-            _15.TestMatrix();
+            _16.Test2();
             Console.WriteLine();
-            _15.TestPrimeNumbers();
+            _16.Test3();
+            Console.WriteLine();
         }
      
     }
